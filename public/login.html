@@ -50,7 +50,7 @@
                         const user = userCredential.user;
                         console.log('Login successful:', user);
                         alert('Login successful!');
-                        window.location.href = '/dashboard';
+                        window.location.href = 'dashboard.html';
                     })
                     .catch((error) => {
                         console.error('Login error:', error);
@@ -62,7 +62,7 @@
     
     <style>
         body {
-            background-image: url('/hintergrund-tapete-1468409406xpF.jpg');
+            background-image: url('hintergrund-tapete-1468409406xpF.jpg');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -173,7 +173,7 @@
             <button type="submit">Login</button>
             <div class="links">
                 <a href="#forgot-password">Forgot Password?</a>
-                <a href="/signup">Create New Account</a>
+                <a href="signup.html">Create New Account</a>
             </div>
         </form>
     </div>
