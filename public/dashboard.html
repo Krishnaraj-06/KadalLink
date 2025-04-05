@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishermen Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-image: url('hintergrund-tapete-1468409406xpF.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .welcome-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .welcome-section h1 {
+            color: #00796b;
+            margin-bottom: 10px;
+        }
+
+        .welcome-section p {
+            color: #666;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .option-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .option-card i {
+            font-size: 40px;
+            color: #00796b;
+            margin-bottom: 15px;
+        }
+
+        .option-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .option-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #d32f2f;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: #b71c1c;
+        }
+
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="logout-btn" onclick="location.href='login.html'">
+        <i class="fas fa-sign-out-alt"></i> Logout
+    </button>
+
+    <div class="dashboard-container">
+        <div class="welcome-section">
+            <h1>Welcome to Fishermen Support System</h1>
+            <p>Select an option to get started</p>
+        </div>
+
+        <div class="options-grid">
+            <div class="option-card" onclick="location.href='weather.html'">
+                <i class="fas fa-cloud-sun"></i>
+                <h3>Weather Information</h3>
+                <p>Check current weather conditions, wind speed, and forecasts for your fishing location</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='fishing-times.html'">
+                <i class="fas fa-clock"></i>
+                <h3>Best Fishing Times</h3>
+                <p>Get recommendations for the best times to fish based on weather and tide conditions</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='location.html'">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Fishing Locations</h3>
+                <p>Find and save your favorite fishing spots with detailed maps and directions</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='fish-prices.html'">
+                <i class="fas fa-dollar-sign"></i>
+                <h3>Fish Market Prices</h3>
+                <p>Check current market prices for different types of fish in your area</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='past-activities.html'">
+                <i class="fas fa-history"></i>
+                <h3>Past Activities</h3>
+                <p>View your fishing history, catches, and previous trips</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='emergency.html'">
+                <i class="fas fa-phone-alt"></i>
+                <h3>Emergency Contacts</h3>
+                <p>Access emergency numbers and safety information for fishing trips</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='tips.html'">
+                <i class="fas fa-lightbulb"></i>
+                <h3>Fishing Tips</h3>
+                <p>Get expert tips and techniques for different fishing conditions</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='community.html'">
+                <i class="fas fa-users"></i>
+                <h3>Community</h3>
+                <p>Connect with other fishermen and share experiences</p>
+            </div>
+
+            <div class="option-card" onclick="location.href='tracking.html'">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Live Tracker</h3>
+                <p>Track your location in real-time and monitor safety status</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

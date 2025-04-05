@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fisherman Tracking System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: #00796b;
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+        }
+
+        .back-btn {
+            background: white;
+            color: #00796b;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .tracking-container {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .map-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .map-overlay {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .map-overlay select {
+            padding: 5px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+        }
+
+        .boundary-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .boundary-input {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .boundary-input input {
+            width: 120px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .boundary-btn {
+            background: #00796b;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .boundary-btn:hover {
+            background: #00695c;
+        }
+
+        .boundary-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        #fishermanMap {
+            width: 100%;
+            height: 600px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            z-index: 1;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            color: #00796b;
+            margin-bottom: 10px;
+        }
+
+        .stat-card .value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-card .label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .info-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            transition: transform 0.3s ease;
+        }
+
+        .info-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .info-card h3 {
+            color: #00796b;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .info-card p {
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+        }
+
+        .safety-status {
+            background: #e8f5e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+
+        .safety-status h4 {
+            color: #2e7d32;
+            margin-bottom: 10px;
+        }
+
+        .safety-status ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .safety-status li {
+            margin: 5px 0;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .safety-status li i {
+            color: #2e7d32;
+        }
+
+        .alert {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .control-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .start-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .stop-btn {
+            background: #f44336;
+            color: white;
+        }
+
+        .sos-btn {
+            background: #ff9800;
+            color: white;
+        }
+
+        .sos-btn:hover {
+            background: #f57c00;
+        }
+
+        .tracking-controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 768px) {
+            .tracking-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .map-overlay {
+                position: static;
+                margin-bottom: 15px;
+            }
+            
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Fisherman Tracking System</h1>
+            <a href="dashboard.html" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+
+        <div class="tracking-container">
+            <div class="map-section">
+                <div class="map-overlay">
+                    <select id="mapType" onchange="changeMapType(this.value)">
+                        <option value="standard">Standard Map</option>
+                        <option value="satellite">Satellite View</option>
+                        <option value="terrain">Terrain View</option>
+                    </select>
+                </div>
+                <div id="fishermanMap"></div>
+                <div class="tracking-controls">
+                    <button class="control-btn start-btn" onclick="startTracking()">
+                        <i class="fas fa-play"></i> Start Tracking
+                    </button>
+                    <button class="control-btn stop-btn" onclick="stopTracking()">
+                        <i class="fas fa-stop"></i> Stop Tracking
+                    </button>
+                    <button class="control-btn sos-btn" onclick="sendSOS()">
+                        <i class="fas fa-exclamation-triangle"></i> SOS Alert
+                    </button>
+                </div>
+                <div id="trackingAlert" class="alert"></div>
+                
+                <div class="stats-container">
+                    <div class="stat-card">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <div class="value" id="currentSpeed">0</div>
+                        <div class="label">Current Speed (km/h)</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-compass"></i>
+                        <div class="value" id="heading">--</div>
+                        <div class="label">Direction</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-battery-full"></i>
+                        <div class="value" id="batteryLevel">--</div>
+                        <div class="label">Battery Level</div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-signal"></i>
+                        <div class="value" id="networkStatus">--</div>
+                        <div class="label">Network Status</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <div class="info-card">
+                    <h3><i class="fas fa-map-marker-alt"></i> Current Location</h3>
+                    <p><i class="fas fa-latitude"></i> Latitude: <span id="latitude">--</span></p>
+                    <p><i class="fas fa-longitude"></i> Longitude: <span id="longitude">--</span></p>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="fas fa-chart-line"></i> Movement Info</h3>
+                    <p><i class="fas fa-tachometer-alt"></i> Speed: <span id="currentSpeed">0</span> km/h</p>
+                    <p><i class="fas fa-compass"></i> Direction: <span id="heading">--</span></p>
+                    <div class="safety-status">
+                        <h4><i class="fas fa-shield-alt"></i> Safety Status</h4>
+                        <ul>
+                            <li><i class="fas fa-check-circle"></i> Speed within limits</li>
+                            <li><i class="fas fa-check-circle"></i> Network connected</li>
+                            <li><i class="fas fa-check-circle"></i> Battery sufficient</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="fas fa-info-circle"></i> Device Status</h3>
+                    <p><i class="fas fa-battery-full"></i> Battery: <span id="batteryLevel">--</span></p>
+                    <p><i class="fas fa-signal"></i> Network: <span id="networkStatus">--</span></p>
+                    <p><i class="fas fa-clock"></i> Last Update: <span id="lastUpdate">--</span></p>
+                </div>
+
+                <div class="info-card">
+                    <h3><i class="fas fa-info-circle"></i> Device Information</h3>
+                    <p><i class="fas fa-network-wired"></i> IP Address: <span id="ipAddress">--</span></p>
+                    <p><i class="fas fa-desktop"></i> Device: <span id="deviceInfo">--</span></p>
+                    <p><i class="fas fa-globe"></i> Browser: <span id="browserInfo">--</span></p>
+                    <p><i class="fas fa-laptop"></i> OS: <span id="osInfo">--</span></p>
+                    <p><i class="fas fa-language"></i> Language: <span id="languageInfo">--</span></p>
+                    <p><i class="fas fa-desktop"></i> Screen: <span id="screenResolution">--</span></p>
+                    <p><i class="fas fa-clock"></i> Timezone: <span id="timezoneInfo">--</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        let map;
+        let marker;
+        let trackingInterval;
+        let currentPosition;
+        let isTracking = false;
+        let lastAlertTime = 0;
+        let boundaryCircle = null;
+        let boundarySet = false;
+        const DEFAULT_BOUNDARY_RADIUS = 1007;
+        const ALERT_COOLDOWN = 30000;
+
+        function initMap(lat = 19.0760, lon = 72.8777) {
+            if (!map) {
+                map = L.map('fishermanMap').setView([lat, lon], 13);
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+            } else {
+                map.setView([lat, lon], 13);
+            }
+
+            if (marker) {
+                marker.remove();
+            }
+            marker = L.marker([lat, lon]).addTo(map);
+        }
+
+        function startTracking() {
+            if ("geolocation" in navigator) {
+                isTracking = true;
+                trackingInterval = navigator.geolocation.watchPosition(
+                    updateLocation,
+                    handleError,
+                    {
+                        enableHighAccuracy: true,
+                        timeout: 5000,
+                        maximumAge: 0
+                    }
+                );
+                showAlert('Tracking started successfully', 'success');
+                
+                if (!boundarySet) {
+                    setDefaultBoundary();
+                }
+            } else {
+                showAlert('Geolocation is not supported by your browser', 'error');
+            }
+        }
+
+        function stopTracking() {
+            if (trackingInterval) {
+                navigator.geolocation.clearWatch(trackingInterval);
+                isTracking = false;
+                showAlert('Tracking stopped', 'info');
+            }
+        }
+
+        function updateLocation(position) {
+            currentPosition = position;
+            const coords = position.coords;
+            
+            initMap(coords.latitude, coords.longitude);
+            
+            checkBoundary(coords);
+            
+            document.getElementById('latitude').textContent = coords.latitude.toFixed(6) + '° N';
+            document.getElementById('longitude').textContent = coords.longitude.toFixed(6) + '° E';
+            document.getElementById('currentSpeed').textContent = (coords.speed * 3.6).toFixed(2);
+            document.getElementById('heading').textContent = getWindDirection(coords.heading);
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+
+            if (marker) {
+                marker.bindPopup(`
+                    <div style="padding: 10px;">
+                        <h4 style="margin-bottom: 10px;">Current Location</h4>
+                        <p><i class="fas fa-latitude"></i> Latitude: ${coords.latitude.toFixed(6)}° N</p>
+                        <p><i class="fas fa-longitude"></i> Longitude: ${coords.longitude.toFixed(6)}° E</p>
+                        <p><i class="fas fa-tachometer-alt"></i> Speed: ${(coords.speed * 3.6).toFixed(2)} km/h</p>
+                        <p><i class="fas fa-compass"></i> Direction: ${getWindDirection(coords.heading)}</p>
+                        <p><i class="fas fa-clock"></i> Time: ${new Date().toLocaleTimeString()}</p>
+                    </div>
+                `);
+            }
+
+            updateSafetyStatus(coords);
+            
+            checkAutomaticAlerts(coords);
+
+            updateDeviceStatus();
+            
+            sendToServer(coords);
+        }
+
+        function handleError(error) {
+            let message = 'Error getting location: ';
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    message += 'Permission denied';
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    message += 'Position unavailable';
+                    break;
+                case error.TIMEOUT:
+                    message += 'Request timed out';
+                    break;
+                default:
+                    message += 'Unknown error';
+                    break;
+            }
+            showAlert(message, 'error');
+        }
+
+        function sendSOS() {
+            if (currentPosition) {
+                const coords = currentPosition.coords;
+                showAlert('SOS Alert Sent! Emergency services have been notified.', 'error');
+                console.log('SOS Alert:', {
+                    latitude: coords.latitude,
+                    longitude: coords.longitude,
+                    timestamp: new Date().toISOString()
+                });
+            }
+        }
+
+        function checkAutomaticAlerts(coords) {
+            const currentTime = Date.now();
+            if (currentTime - lastAlertTime < ALERT_COOLDOWN) return;
+
+            if (coords.speed * 3.6 > 30) {
+                sendAutomaticAlert('High Speed Alert! You are moving at ' + (coords.speed * 3.6).toFixed(2) + ' km/h', 'warning');
+                lastAlertTime = currentTime;
+            }
+
+            const dangerousZone = {
+                lat: 19.0760,
+                lon: 72.8777,
+                radius: 0.1
+            };
+
+            const distance = calculateDistance(
+                coords.latitude,
+                coords.longitude,
+                dangerousZone.lat,
+                dangerousZone.lon
+            );
+
+            if (distance < dangerousZone.radius) {
+                sendAutomaticAlert('Warning! You are entering a dangerous area!', 'error');
+                lastAlertTime = currentTime;
+            }
+        }
+
+        function calculateDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371;
+            const dLat = toRad(lat2 - lat1);
+            const dLon = toRad(lon2 - lon1);
+            const a = 
+                Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
+        }
+
+        function toRad(degrees) {
+            return degrees * (Math.PI/180);
+        }
+
+        function sendAutomaticAlert(message, type) {
+            showAlert(message, type);
+            console.log('Automatic Alert:', {
+                message: message,
+                type: type,
+                timestamp: new Date().toISOString(),
+                location: currentPosition.coords
+            });
+        }
+
+        function updateDeviceStatus() {
+            if ('getBattery' in navigator) {
+                navigator.getBattery().then(battery => {
+                    const batteryLevel = Math.round(battery.level * 100);
+                    const chargingStatus = battery.charging ? 'Charging' : 'Not Charging';
+                    document.getElementById('batteryLevel').textContent = `${batteryLevel}% (${chargingStatus})`;
+                    
+                    if (batteryLevel < 20) {
+                        sendAutomaticAlert('Low Battery Alert! Battery level: ' + batteryLevel + '%', 'warning');
+                    }
+                });
+            }
+
+            const isOnline = navigator.onLine;
+            const connectionType = navigator.connection ? navigator.connection.type : 'Unknown';
+            document.getElementById('networkStatus').textContent = `${isOnline ? 'Online' : 'Offline'} (${connectionType})`;
+            
+            if (!isOnline) {
+                sendAutomaticAlert('Network Connection Lost!', 'error');
+            }
+        }
+
+        function sendToServer(coords) {
+            console.log('Sending to server:', {
+                latitude: coords.latitude,
+                longitude: coords.longitude,
+                speed: coords.speed,
+                heading: coords.heading,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        function showAlert(message, type) {
+            const alert = document.getElementById('trackingAlert');
+            alert.textContent = message;
+            alert.style.display = 'block';
+            alert.style.backgroundColor = type === 'error' ? '#ffebee' : 
+                                        type === 'success' ? '#e8f5e9' : '#e3f2fd';
+            alert.style.color = type === 'error' ? '#c62828' : 
+                               type === 'success' ? '#2e7d32' : '#1565c0';
+            
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        function getWindDirection(degrees) {
+            const directions = ['N', 'NE', 'E', 'SE', 'S', 'SW', 'W', 'NW'];
+            const index = Math.round(((degrees % 360) / 45)) % 8;
+            return directions[index];
+        }
+
+        window.addEventListener('online', () => {
+            document.getElementById('networkStatus').textContent = 'Online';
+        });
+
+        window.addEventListener('offline', () => {
+            document.getElementById('networkStatus').textContent = 'Offline';
+        });
+
+        function changeMapType(type) {
+            if (map) {
+                map.removeLayer(map._layers[Object.keys(map._layers)[0]]);
+                let url;
+                switch(type) {
+                    case 'satellite':
+                        url = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+                        break;
+                    case 'terrain':
+                        url = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
+                        break;
+                    default:
+                        url = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+                }
+                L.tileLayer(url, {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+            }
+        }
+
+        function updateSafetyStatus(coords) {
+            const speed = coords.speed * 3.6;
+            const speedStatus = speed <= 30 ? 'check-circle' : 'exclamation-circle';
+            const speedColor = speed <= 30 ? '#2e7d32' : '#f44336';
+            
+            const batteryLevel = parseInt(document.getElementById('batteryLevel').textContent) || 0;
+            const batteryStatus = batteryLevel > 20 ? 'check-circle' : 'exclamation-circle';
+            const batteryColor = batteryLevel > 20 ? '#2e7d32' : '#f44336';
+            
+            const networkStatus = document.getElementById('networkStatus').textContent;
+            const networkStatusIcon = networkStatus.includes('Online') ? 'check-circle' : 'exclamation-circle';
+            const networkColor = networkStatus.includes('Online') ? '#2e7d32' : '#f44336';
+
+            const safetyList = document.querySelector('.safety-status ul');
+            safetyList.innerHTML = `
+                <li><i class="fas fa-${speedStatus}" style="color: ${speedColor}"></i> Speed: ${speed.toFixed(2)} km/h ${speed > 30 ? '(High Speed Warning)' : ''}</li>
+                <li><i class="fas fa-${batteryStatus}" style="color: ${batteryColor}"></i> Battery: ${batteryLevel}% ${batteryLevel < 20 ? '(Low Battery Warning)' : ''}</li>
+                <li><i class="fas fa-${networkStatusIcon}" style="color: ${networkColor}"></i> Network: ${networkStatus}</li>
+                <li><i class="fas fa-map-marker-alt" style="color: #00796b"></i> Location: ${coords.latitude.toFixed(6)}° N, ${coords.longitude.toFixed(6)}° E</li>
+                <li><i class="fas fa-compass" style="color: #00796b"></i> Direction: ${getWindDirection(coords.heading)}</li>
+            `;
+        }
+
+        async function getUserDeviceInfo() {
+            try {
+                const ipResponse = await fetch('https://api.ipify.org?format=json');
+                const ipData = await ipResponse.json();
+                const ipAddress = ipData.ip;
+
+                const deviceInfo = {
+                    ip: ipAddress,
+                    userAgent: navigator.userAgent,
+                    platform: navigator.platform,
+                    language: navigator.language,
+                    screenResolution: `${window.screen.width}x${window.screen.height}`,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    browser: getBrowserInfo(),
+                    os: getOSInfo()
+                };
+
+                updateDeviceInfoDisplay(deviceInfo);
+                return deviceInfo;
+            } catch (error) {
+                console.error('Error getting device info:', error);
+                return null;
+            }
+        }
+
+        function getBrowserInfo() {
+            const ua = navigator.userAgent;
+            let browserName;
+            let browserVersion;
+
+            if (ua.includes('Firefox/')) {
+                browserName = 'Firefox';
+                browserVersion = ua.split('Firefox/')[1].split(' ')[0];
+            } else if (ua.includes('Chrome/')) {
+                browserName = 'Chrome';
+                browserVersion = ua.split('Chrome/')[1].split(' ')[0];
+            } else if (ua.includes('Safari/')) {
+                browserName = 'Safari';
+                browserVersion = ua.split('Version/')[1]?.split(' ')[0] || 'Unknown';
+            } else if (ua.includes('Edge/')) {
+                browserName = 'Edge';
+                browserVersion = ua.split('Edge/')[1].split(' ')[0];
+            } else {
+                browserName = 'Unknown';
+                browserVersion = 'Unknown';
+            }
+
+            return `${browserName} ${browserVersion}`;
+        }
+
+        function getOSInfo() {
+            const ua = navigator.userAgent;
+            let osName;
+            let osVersion;
+
+            if (ua.includes('Windows')) {
+                osName = 'Windows';
+                osVersion = ua.split('Windows NT ')[1]?.split(';')[0] || 'Unknown';
+            } else if (ua.includes('Mac')) {
+                osName = 'MacOS';
+                osVersion = ua.split('Mac OS X ')[1]?.split(')')[0] || 'Unknown';
+            } else if (ua.includes('Linux')) {
+                osName = 'Linux';
+                osVersion = ua.split('Linux ')[1]?.split(' ')[0] || 'Unknown';
+            } else if (ua.includes('Android')) {
+                osName = 'Android';
+                osVersion = ua.split('Android ')[1]?.split(';')[0] || 'Unknown';
+            } else if (ua.includes('iOS')) {
+                osName = 'iOS';
+                osVersion = ua.split('OS ')[1]?.split(' ')[0] || 'Unknown';
+            } else {
+                osName = 'Unknown';
+                osVersion = 'Unknown';
+            }
+
+            return `${osName} ${osVersion}`;
+        }
+
+        function updateDeviceInfoDisplay(deviceInfo) {
+            const deviceCard = document.querySelector('.info-card:last-child');
+            deviceCard.innerHTML = `
+                <h3><i class="fas fa-info-circle"></i> Device Information</h3>
+                <p><i class="fas fa-network-wired"></i> IP Address: ${deviceInfo.ip}</p>
+                <p><i class="fas fa-desktop"></i> Device: ${deviceInfo.platform}</p>
+                <p><i class="fas fa-globe"></i> Browser: ${deviceInfo.browser}</p>
+                <p><i class="fas fa-laptop"></i> OS: ${deviceInfo.os}</p>
+                <p><i class="fas fa-language"></i> Language: ${deviceInfo.language}</p>
+                <p><i class="fas fa-desktop"></i> Screen: ${deviceInfo.screenResolution}</p>
+                <p><i class="fas fa-clock"></i> Timezone: ${deviceInfo.timezone}</p>
+            `;
+        }
+
+        window.onload = async function() {
+            initMap();
+            await getUserDeviceInfo();
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        updateLocation(position);
+                    },
+                    function(error) {
+                        console.log("Error getting initial position:", error);
+                    }
+                );
+            }
+        };
+
+        function setDefaultBoundary() {
+            if (!currentPosition) {
+                showAlert('Please wait for location to be available', 'error');
+                return;
+            }
+
+            const coords = currentPosition.coords;
+
+            if (boundaryCircle) {
+                boundaryCircle.remove();
+            }
+
+            boundaryCircle = L.circle([coords.latitude, coords.longitude], {
+                color: '#00796b',
+                fillColor: '#00796b',
+                fillOpacity: 0.1,
+                radius: DEFAULT_BOUNDARY_RADIUS * 1000,
+                dashArray: '10, 10',
+                weight: 2
+            }).addTo(map);
+
+            boundarySet = true;
+            showAlert(`Fishing boundary set to ${DEFAULT_BOUNDARY_RADIUS} km from current location`, 'success');
+        }
+
+        function checkBoundary(coords) {
+            if (!boundarySet || !boundaryCircle) return;
+
+            const boundaryCenter = boundaryCircle.getLatLng();
+            const distance = calculateDistance(
+                coords.latitude,
+                coords.longitude,
+                boundaryCenter.lat,
+                boundaryCenter.lng
+            );
+
+            const radiusKm = boundaryCircle.getRadius() / 1000;
+
+            if (distance > radiusKm) {
+                const currentTime = Date.now();
+                if (currentTime - lastAlertTime >= ALERT_COOLDOWN) {
+                    showAlert(`⚠ ALERT: You have crossed the fishing boundary! You are ${(distance - radiusKm).toFixed(2)} km outside the allowed area.`, 'error');
+                    lastAlertTime = currentTime;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

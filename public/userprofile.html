@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Your Profile - Fishermen Support System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-image: url('hintergrund-tapete-1468409406xpF.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+
+        .profile-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 500px;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+        }
+
+        .profile-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .profile-header img {
+            width: 100px;
+            margin-bottom: 15px;
+        }
+
+        .profile-header h1 {
+            color: #00796b;
+            margin-bottom: 10px;
+        }
+
+        .profile-header p {
+            color: #666;
+            font-size: 16px;
+        }
+
+        .profile-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input, .form-group select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #00796b;
+            outline: none;
+        }
+
+        .user-type-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        .user-type-option {
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .user-type-option:hover {
+            border-color: #00796b;
+            background: #f5f5f5;
+        }
+
+        .user-type-option.selected {
+            border-color: #00796b;
+            background: #e0f2f1;
+        }
+
+        .user-type-option i {
+            font-size: 24px;
+            color: #00796b;
+            margin-bottom: 8px;
+        }
+
+        .boat-options {
+            display: none;
+            margin-top: 10px;
+        }
+
+        .boat-options.show {
+            display: block;
+        }
+
+        .submit-btn {
+            background-color: #00796b;
+            color: white;
+            padding: 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background-color: #004d40;
+            transform: translateY(-2px);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .progress {
+            width: 50%;
+            height: 100%;
+            background: #00796b;
+            transition: width 0.3s ease;
+        }
+
+        .language-selector {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 10px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .language-selector select {
+            padding: 8px;
+            border: 2px solid #00796b;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #00796b;
+            cursor: pointer;
+        }
+
+        .language-selector select:focus {
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <select id="languageSelect" onchange="changeLanguage(this.value)">
+            <option value="en">English</option>
+            <option value="hi">हिंदी</option>
+            <option value="es">Español</option>
+            <option value="fr">Français</option>
+            <option value="ar">العربية</option>
+            <option value="zh">中文</option>
+        </select>
+    </div>
+
+    <div class="profile-container">
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        
+        <div class="profile-header">
+            <img src="https://img.icons8.com/color/96/000000/fishing.png" alt="Fishermen Logo">
+            <h1>Complete Your Profile</h1>
+            <p>Please provide your information to get started</p>
+        </div>
+
+        <form class="profile-form" action="dashboard.html" method="POST">
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" name="fullname" placeholder="Enter your full name" required>
+            </div>
+
+            <div class="form-group">
+                <label>Phone Number</label>
+                <input type="tel" name="phone" placeholder="Enter your phone number" required>
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" name="email" placeholder="Enter your email address" required>
+            </div>
+
+            <div class="form-group">
+                <label>I am a:</label>
+                <div class="user-type-options">
+                    <div class="user-type-option" onclick="selectUserType('sailor')">
+                        <i class="fas fa-ship"></i>
+                        <div>Professional Sailor</div>
+                    </div>
+                    <div class="user-type-option" onclick="selectUserType('boat_renter')">
+                        <i class="fas fa-anchor"></i>
+                        <div>Boat Renter</div>
+                    </div>
+                </div>
+                <input type="hidden" name="user_type" id="user_type" required>
+            </div>
+
+            <div class="form-group boat-options" id="boatOptions">
+                <label>Boat Type</label>
+                <select name="boat_type" id="boat_type">
+                    <option value="">Select boat type</option>
+                    <option value="small">Small Boat (Up to 20 feet)</option>
+                    <option value="medium">Medium Boat (20-40 feet)</option>
+                    <option value="large">Large Boat (40+ feet)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Experience Level</label>
+                <select name="experience" required>
+                    <option value="">Select experience level</option>
+                    <option value="beginner">Beginner (0-2 years)</option>
+                    <option value="intermediate">Intermediate (2-5 years)</option>
+                    <option value="expert">Expert (5+ years)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Preferred Fishing Location</label>
+                <input type="text" name="location" placeholder="Enter your preferred fishing location" required>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">Complete Profile</button>
+        </form>
+    </div>
+
+    <script>
+        function selectUserType(type) {
+            // Remove selected class from all options
+            document.querySelectorAll('.user-type-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Add selected class to clicked option
+            event.currentTarget.classList.add('selected');
+
+            // Set hidden input value
+            document.getElementById('user_type').value = type;
+
+            // Show/hide boat options based on selection
+            const boatOptions = document.getElementById('boatOptions');
+            if (type === 'boat_renter') {
+                boatOptions.classList.add('show');
+            } else {
+                boatOptions.classList.remove('show');
+            }
+        }
+
+        // Handle form submission
+        document.querySelector('.profile-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Get the submit button
+            const submitBtn = document.getElementById('submitBtn');
+            
+            // Change button text to show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+            submitBtn.disabled = true;
+
+            // Simulate form processing (remove this in production and use actual form submission)
+            setTimeout(() => {
+                // Show success message
+                submitBtn.innerHTML = '<i class="fas fa-check"></i> Profile Completed!';
+                
+                // Redirect to dashboard after a short delay
+                setTimeout(() => {
+                    window.location.replace('dashboard.html');
+                }, 1000);
+            }, 1500);
+        });
+
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'en',
+                includedLanguages: 'en,hi,es,fr,ar,zh',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+
+        function changeLanguage(languageCode) {
+            const select = document.querySelector('.goog-te-combo');
+            if (select) {
+                select.value = languageCode;
+                select.dispatchEvent(new Event('change'));
+            }
+        }
+    </script>
+</body>
+</html>

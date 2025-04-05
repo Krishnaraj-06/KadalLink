@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Locations - Fishermen Support System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        body {
+            background-image: url('hintergrund-tapete-1468409406xpF.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .location-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #00796b;
+        }
+
+        .back-btn {
+            background: #00796b;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #004d40;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .map-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .map-container {
+            height: 500px;
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+
+        .map-controls button {
+            display: block;
+            margin: 5px 0;
+            padding: 8px 15px;
+            background: #00796b;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .map-controls button:hover {
+            background: #004d40;
+        }
+
+        .info-window {
+            padding: 10px;
+        }
+
+        .info-window h3 {
+            color: #00796b;
+            margin-bottom: 5px;
+        }
+
+        .info-window p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        .location-info {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-box {
+            margin-bottom: 20px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .search-box button {
+            background: #00796b;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            width: 100%;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box button:hover {
+            background: #004d40;
+        }
+
+        .location-details {
+            margin-top: 20px;
+        }
+
+        .detail-item {
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-radius: 8px;
+        }
+
+        .detail-item h3 {
+            color: #00796b;
+            margin-bottom: 8px;
+        }
+
+        .detail-item p {
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .favorite-locations {
+            margin-top: 30px;
+        }
+
+        .favorite-locations h2 {
+            color: #00796b;
+            margin-bottom: 15px;
+        }
+
+        .favorite-list {
+            list-style: none;
+        }
+
+        .favorite-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: #f5f5f5;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .favorite-item:hover {
+            background: #e0e0e0;
+        }
+
+        .favorite-item i {
+            color: #d32f2f;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .weather-widget {
+            background: linear-gradient(135deg, #00b4db, #0083B0);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .weather-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+        }
+
+        .weather-detail {
+            text-align: center;
+        }
+
+        .weather-detail i {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .tide-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #00796b;
+        }
+
+        .tide-chart {
+            height: 100px;
+            background: #e9ecef;
+            border-radius: 5px;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tide-level {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: #00796b;
+            transition: height 0.3s ease;
+        }
+
+        .location-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 24px;
+            color: #00796b;
+            margin-bottom: 10px;
+        }
+
+        .stat-card h4 {
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            font-size: 20px;
+            font-weight: bold;
+            color: #00796b;
+        }
+
+        .fishing-tips {
+            background: #fff3e0;
+            padding: 20px;
+            border-radius: 15px;
+            margin-top: 20px;
+        }
+
+        .tip-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .tip-item i {
+            color: #ff9800;
+            margin-right: 10px;
+            font-size: 20px;
+        }
+
+        .loading-spinner {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            color: #00796b;
+        }
+
+        .loading-spinner i {
+            font-size: 48px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="location-container">
+        <div class="header">
+            <h1>Fishing Locations</h1>
+            <button class="back-btn" onclick="location.href='dashboard.html'">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </button>
+        </div>
+
+        <div class="main-content">
+            <div class="map-section">
+                <h2>Interactive Map</h2>
+                <div class="map-container">
+                    <div id="map"></div>
+                    <div class="loading-spinner">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Loading map data...</p>
+                    </div>
+                    <div class="map-controls">
+                        <button onclick="showAllLocations()"><i class="fas fa-map-marker-alt"></i> Show All Locations</button>
+                        <button onclick="showFavorites()"><i class="fas fa-heart"></i> Show Favorites</button>
+                        <button onclick="getCurrentLocation()"><i class="fas fa-location-dot"></i> My Location</button>
+                    </div>
+                </div>
+
+                <div class="weather-widget">
+                    <h3><i class="fas fa-cloud-sun"></i> Current Weather</h3>
+                    <div class="weather-info">
+                        <div class="weather-detail">
+                            <i class="fas fa-temperature-high"></i>
+                            <p>28°C</p>
+                        </div>
+                        <div class="weather-detail">
+                            <i class="fas fa-wind"></i>
+                            <p>12 km/h</p>
+                        </div>
+                        <div class="weather-detail">
+                            <i class="fas fa-water"></i>
+                            <p>Humidity: 75%</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tide-info">
+                    <h3><i class="fas fa-water"></i> Tide Information</h3>
+                    <div class="tide-chart">
+                        <div class="tide-level" style="height: 75%"></div>
+                    </div>
+                    <p>Next High Tide: 2:30 PM</p>
+                </div>
+            </div>
+
+            <div class="location-info">
+                <div class="search-box">
+                    <input type="text" placeholder="Search for fishing locations...">
+                    <button><i class="fas fa-search"></i> Search Location</button>
+                </div>
+
+                <div class="location-stats">
+                    <div class="stat-card">
+                        <i class="fas fa-fish"></i>
+                        <h4>Fish Species</h4>
+                        <p>12</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-users"></i>
+                        <h4>Active Fishermen</h4>
+                        <p>45</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-boat"></i>
+                        <h4>Boats Present</h4>
+                        <p>8</p>
+                    </div>
+                    <div class="stat-card">
+                        <i class="fas fa-star"></i>
+                        <h4>Rating</h4>
+                        <p>4.5/5</p>
+                    </div>
+                </div>
+
+                <div class="fishing-tips">
+                    <h3><i class="fas fa-lightbulb"></i> Fishing Tips</h3>
+                    <div class="tip-item">
+                        <i class="fas fa-clock"></i>
+                        <p>Best time to fish is during early morning or late evening</p>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-fish"></i>
+                        <p>Use live bait for better catch rates</p>
+                    </div>
+                    <div class="tip-item">
+                        <i class="fas fa-cloud"></i>
+                        <p>Check weather conditions before heading out</p>
+                    </div>
+                </div>
+
+                <div class="location-details">
+                    <div class="detail-item">
+                        <h3>Current Location</h3>
+                        <p>Chennai Coast, Tamil Nadu</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <h3>Water Conditions</h3>
+                        <p>Depth: 15-20 meters<br>
+                        Current: Moderate<br>
+                        Visibility: Good</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <h3>Fish Species Found</h3>
+                        <p>Pomfret, Mackerel, Prawns, Tuna</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <h3>Best Time to Visit</h3>
+                        <p>Early Morning (4 AM - 8 AM)<br>
+                        Evening (4 PM - 8 PM)</p>
+                    </div>
+
+                    <div class="detail-item">
+                        <h3>Safety Information</h3>
+                        <p>• Coast Guard Station: 2 km away<br>
+                        • Emergency Helpline: 1554<br>
+                        • Weather Alert: Active</p>
+                    </div>
+                </div>
+
+                <div class="favorite-locations">
+                    <h2>Favorite Locations</h2>
+                    <ul class="favorite-list">
+                        <li class="favorite-item">
+                            <span>Chennai Coast</span>
+                            <i class="fas fa-heart"></i>
+                        </li>
+                        <li class="favorite-item">
+                            <span>Kanyakumari Point</span>
+                            <i class="fas fa-heart"></i>
+                        </li>
+                        <li class="favorite-item">
+                            <span>Rameswaram Beach</span>
+                            <i class="fas fa-heart"></i>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize map
+        let map;
+        let markers = [];
+        const fishingLocations = [
+            {
+                name: 'Chennai Coast',
+                position: { lat: 13.0827, lng: 80.2707 },
+                details: {
+                    depth: '15-20 meters',
+                    current: 'Moderate',
+                    visibility: 'Good',
+                    fish: 'Pomfret, Mackerel, Prawns, Tuna',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Coast Guard Station: 2 km away'
+                }
+            },
+            {
+                name: 'Kanyakumari Point',
+                position: { lat: 8.0883, lng: 77.5385 },
+                details: {
+                    depth: '20-25 meters',
+                    current: 'Strong',
+                    visibility: 'Excellent',
+                    fish: 'Tuna, Kingfish, Sardines',
+                    bestTime: 'Evening (4 PM - 8 PM)',
+                    safety: 'Emergency Helpline: 1554'
+                }
+            },
+            {
+                name: 'Rameswaram Beach',
+                position: { lat: 9.2882, lng: 79.3127 },
+                details: {
+                    depth: '10-15 meters',
+                    current: 'Light',
+                    visibility: 'Good',
+                    fish: 'Pomfret, Prawns, Crab',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Weather Alert: Active'
+                }
+            },
+            {
+                name: 'Mumbai Coast',
+                position: { lat: 19.0760, lng: 72.8777 },
+                details: {
+                    depth: '18-22 meters',
+                    current: 'Moderate',
+                    visibility: 'Good',
+                    fish: 'Pomfret, Mackerel, Prawns, Kingfish',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Coast Guard Station: 3 km away'
+                }
+            },
+            {
+                name: 'Kochi Backwaters',
+                position: { lat: 9.9312, lng: 76.2673 },
+                details: {
+                    depth: '5-10 meters',
+                    current: 'Light',
+                    visibility: 'Good',
+                    fish: 'Pearl Spot, Karimeen, Prawns',
+                    bestTime: 'Morning (6 AM - 10 AM)',
+                    safety: 'Local Guide Available'
+                }
+            },
+            {
+                name: 'Visakhapatnam Port',
+                position: { lat: 17.6868, lng: 83.2185 },
+                details: {
+                    depth: '15-20 meters',
+                    current: 'Moderate',
+                    visibility: 'Good',
+                    fish: 'Tuna, Mackerel, Sardines',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Port Authority Alert: Active'
+                }
+            },
+            {
+                name: 'Goa Beaches',
+                position: { lat: 15.4989, lng: 73.8278 },
+                details: {
+                    depth: '12-18 meters',
+                    current: 'Moderate',
+                    visibility: 'Excellent',
+                    fish: 'Pomfret, Kingfish, Prawns',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Tourist Season: Active'
+                }
+            },
+            {
+                name: 'Sundarbans Delta',
+                position: { lat: 21.9497, lng: 88.9401 },
+                details: {
+                    depth: '8-12 meters',
+                    current: 'Strong',
+                    visibility: 'Moderate',
+                    fish: 'Hilsa, Catfish, Prawns',
+                    bestTime: 'Morning (6 AM - 10 AM)',
+                    safety: 'Tiger Reserve Area: Caution'
+                }
+            },
+            {
+                name: 'Andaman Islands',
+                position: { lat: 11.6234, lng: 92.7265 },
+                details: {
+                    depth: '20-30 meters',
+                    current: 'Strong',
+                    visibility: 'Excellent',
+                    fish: 'Tuna, Marlin, Grouper',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Marine Park Zone'
+                }
+            },
+            {
+                name: 'Lakshadweep Islands',
+                position: { lat: 10.5667, lng: 72.6417 },
+                details: {
+                    depth: '15-25 meters',
+                    current: 'Moderate',
+                    visibility: 'Excellent',
+                    fish: 'Tuna, Grouper, Snapper',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Protected Marine Area'
+                }
+            },
+            {
+                name: 'Kerala Backwaters',
+                position: { lat: 9.4981, lng: 76.3388 },
+                details: {
+                    depth: '3-8 meters',
+                    current: 'Light',
+                    visibility: 'Good',
+                    fish: 'Pearl Spot, Karimeen, Prawns',
+                    bestTime: 'Morning (6 AM - 10 AM)',
+                    safety: 'Local Guide Required'
+                }
+            },
+            {
+                name: 'Diu Coast',
+                position: { lat: 20.7144, lng: 70.9874 },
+                details: {
+                    depth: '10-15 meters',
+                    current: 'Moderate',
+                    visibility: 'Good',
+                    fish: 'Pomfret, Mackerel, Prawns',
+                    bestTime: 'Early Morning (4 AM - 8 AM)',
+                    safety: 'Coast Guard Station: 5 km away'
+                }
+            }
+        ];
+
+        function initMap() {
+            showLoading();
+            try {
+                const center = { lat: 11.1271, lng: 78.6569 };
+                map = new google.maps.Map(document.getElementById('map'), {
+                    zoom: 7,
+                    center: center,
+                    mapTypeId: 'terrain',
+                    mapTypeControl: true,
+                    streetViewControl: true,
+                    fullscreenControl: true
+                });
+
+                showAllLocations();
+                hideLoading();
+            } catch (error) {
+                console.error('Error initializing map:', error);
+                hideLoading();
+                document.getElementById('map').innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: #d32f2f;">
+                        <i class="fas fa-exclamation-circle" style="font-size: 48px;"></i>
+                        <h3>Map Loading Error</h3>
+                        <p>Please check your internet connection and try again.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function showAllLocations() {
+            clearMarkers();
+            fishingLocations.forEach(location => {
+                addMarker(location);
+            });
+        }
+
+        function showFavorites() {
+            clearMarkers();
+            // In a real app, this would come from user preferences
+            const favorites = ['Chennai Coast', 'Kanyakumari Point'];
+            fishingLocations
+                .filter(loc => favorites.includes(loc.name))
+                .forEach(location => {
+                    addMarker(location);
+                });
+        }
+
+        function addMarker(location) {
+            const marker = new google.maps.Marker({
+                position: location.position,
+                map: map,
+                title: location.name,
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+                }
+            });
+
+            const infoWindow = new google.maps.InfoWindow({
+                content: `
+                    <div class="info-window">
+                        <h3>${location.name}</h3>
+                        <p><strong>Depth:</strong> ${location.details.depth}</p>
+                        <p><strong>Current:</strong> ${location.details.current}</p>
+                        <p><strong>Fish:</strong> ${location.details.fish}</p>
+                        <p><strong>Best Time:</strong> ${location.details.bestTime}</p>
+                        <p><strong>Safety:</strong> ${location.details.safety}</p>
+                    </div>
+                `
+            });
+
+            marker.addListener('click', () => {
+                infoWindow.open(map, marker);
+            });
+
+            markers.push(marker);
+        }
+
+        function clearMarkers() {
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        map.setCenter(pos);
+                        new google.maps.Marker({
+                            position: pos,
+                            map: map,
+                            title: 'Your Location',
+                            icon: {
+                                url: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+                            }
+                        });
+                    },
+                    () => {
+                        alert('Error: The Geolocation service failed.');
+                    }
+                );
+            } else {
+                alert('Error: Your browser doesn\'t support geolocation.');
+            }
+        }
+
+        // Add click event for favorite locations
+        document.querySelectorAll('.favorite-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const location = this.querySelector('span').textContent;
+                const fishingLocation = fishingLocations.find(loc => loc.name === location);
+                if (fishingLocation) {
+                    map.setCenter(fishingLocation.position);
+                    map.setZoom(12);
+                }
+            });
+        });
+
+        // Add search functionality
+        document.querySelector('.search-box button').addEventListener('click', function() {
+            const searchInput = this.previousElementSibling.value;
+            if (searchInput.trim()) {
+                const location = fishingLocations.find(loc => 
+                    loc.name.toLowerCase().includes(searchInput.toLowerCase())
+                );
+                if (location) {
+                    map.setCenter(location.position);
+                    map.setZoom(12);
+                } else {
+                    alert('Location not found');
+                }
+            }
+        });
+
+        // Add loading spinner
+        function showLoading() {
+            document.querySelector('.loading-spinner').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.querySelector('.loading-spinner').style.display = 'none';
+        }
+    </script>
+
+    <!-- Using a valid API key -->
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAjpKPULWfOAttbUkzwZVySYTKoWmbS2tg&callback=initMap">
+    </script>
+</body>
+</html>

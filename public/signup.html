@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishermen Support System - Sign Up</title>
+    <link rel="stylesheet" href="/style.css">
+    
+    <!-- Firebase App (the core Firebase SDK) -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js" type="module"></script>
+    
+    <!-- Add Firebase products that you want to use -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js" type="module"></script>
+    
+    <script type="module">
+        // Import the functions you need from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCD02d5UhiZiT9VxsGmrg3SCodgVu2DAEg",
+            authDomain: "meenavar-db110.firebaseapp.com",
+            projectId: "meenavar-db110",
+            storageBucket: "meenavar-db110.firebasestorage.app",
+            messagingSenderId: "118458764196",
+            appId: "1:118458764196:web:a67cc2685819b9d51e4f31",
+            measurementId: "G-CXX08TCVWX"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        // Signup functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const signupForm = document.getElementById('signup-form');
+            
+            signupForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const email = document.getElementById('signup-email').value;
+                const password = document.getElementById('signup-password').value;
+                const fullname = document.getElementById('fullname').value;
+                const role = document.getElementById('role').value;
+                const experience = document.getElementById('experience').value;
+                const phone = document.getElementById('phone').value;
+                const location = document.getElementById('location').value;
+                
+                console.log('Attempting to create account with:', {
+                    email,
+                    fullname,
+                    role,
+                    experience,
+                    phone,
+                    location
+                });
+                
+                createUserWithEmailAndPassword(auth, email, password)
+                    .then((userCredential) => {
+                        // Signed up successfully
+                        const user = userCredential.user;
+                        
+                        // Store additional user data
+                        const userData = {
+                            fullname,
+                            role,
+                            experience,
+                            phone,
+                            location,
+                            email
+                        };
+                        
+                        // Here you would typically save this data to your database
+                        console.log('User registered:', user);
+                        console.log('Additional user data:', userData);
+                        
+                        alert('Account created successfully!');
+                        window.location.href = '/'; // Redirect to login page
+                    })
+                    .catch((error) => {
+                        console.error('Signup error:', error);
+                        alert(error.message);
+                    });
+            });
+        });
+    </script>
+    
+    <style>
+        body {
+            background-image: url('/hintergrund-tapete-1468409406xpF.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1;
+        }
+
+        .signup-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 350px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            backdrop-filter: blur(5px);
+        }
+
+        .logo {
+            width: 80px;
+            margin-bottom: 20px;
+        }
+
+        .signup-container h2 {
+            margin-bottom: 25px;
+            color: #00796b;
+            font-size: 24px;
+        }
+
+        #signup-form input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+
+        #signup-form input:focus {
+            border-color: #00796b;
+            outline: none;
+        }
+
+        #signup-form button {
+            background-color: #00796b;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        #signup-form button:hover {
+            background-color: #004d40;
+            transform: translateY(-2px);
+        }
+
+        .links {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .links a {
+            color: #00796b;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .links a:hover {
+            color: #004d40;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="signup-container">
+        <img src="https://img.icons8.com/color/96/000000/fishing.png" alt="Fishermen Logo" class="logo">
+        <h2>Create Account</h2>
+        <form id="signup-form">
+            <input type="email" id="signup-email" placeholder="Email" required>
+            <input type="password" id="signup-password" placeholder="Password" required>
+            <input type="text" id="fullname" placeholder="Full Name" required>
+            <select id="role" required style="width: 100%; padding: 12px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 16px; margin-bottom: 20px; background-color: white;">
+                <option value="">Select Role</option>
+                <option value="sailor">Sailor</option>
+                <option value="fisherman">Fisherman</option>
+                <option value="boat_owner">Boat Owner</option>
+            </select>
+            <input type="number" id="experience" placeholder="Years of Experience" required min="0" max="50">
+            <input type="tel" id="phone" placeholder="Phone Number" required pattern="[0-9]{10}">
+            <input type="text" id="location" placeholder="Current Location" required>
+            <button type="submit">Sign Up</button>
+            <div class="links">
+                <a href="/">Already have an account? Login</a>
+            </div>
+        </form>
+    </div>
+</body>
+</html> 
