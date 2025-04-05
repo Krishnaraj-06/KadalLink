@@ -392,35 +392,32 @@
             userMarker = L.marker([lat, lon]).addTo(map);
             userMarker.bindPopup('Your Location').openPopup();
 
-            // Add red zones around user's location
             addRedZones(lat, lon);
         }
 
         function addRedZones(userLat, userLng) {
-            // Clear existing zones
             restrictedZones.forEach(zone => zone.remove());
             restrictedZones = [];
 
-            // Add red zones around user's location
             const zones = [
                 {
                     lat: userLat + 0.01,
                     lng: userLng + 0.01,
-                    radius: 1000, // 1km radius
+                    radius: 1000,
                     name: "Fishing Ban Zone 1",
                     description: "No fishing allowed in this area"
                 },
                 {
                     lat: userLat - 0.01,
                     lng: userLng - 0.01,
-                    radius: 1500, // 1.5km radius
+                    radius: 1500,
                     name: "Fishing Ban Zone 2",
                     description: "Restricted fishing area"
                 },
                 {
                     lat: userLat + 0.02,
                     lng: userLng - 0.02,
-                    radius: 800, // 800m radius
+                    radius: 800,
                     name: "Fishing Ban Zone 3",
                     description: "Protected marine area"
                 }
@@ -482,7 +479,6 @@
             const coords = position.coords;
             initMap(coords.latitude, coords.longitude);
             
-            // Check if user is in restricted zone
             checkRestrictedZone(coords.latitude, coords.longitude);
         }
 
@@ -565,7 +561,6 @@
             }
         }
 
-        // Initialize map when page loads
         window.onload = function() {
             if ("geolocation" in navigator) {
                 navigator.geolocation.getCurrentPosition(
