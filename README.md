@@ -2,7 +2,7 @@
 
 KadalLink is a tech-driven platform built to empower coastal fishermen of Tamil Nadu. It enhances safety, improves resource efficiency, and boosts sustainability using a combination of real-time tracking, weather forecasts, and community features.
 
-> 🏆 Hackathon Project • Made with ❤️ by Team KadalLink
+> 🏆 Hackathon Project • Made with ❤️ by Team WannaBeCoders
 
 ---
 
